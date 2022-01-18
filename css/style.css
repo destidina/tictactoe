@@ -1,0 +1,87 @@
+body {
+	font-family: 'Arial', cursive;
+	color: var(--text);
+  	background-color: rgb(169, 232, 243);
+}
+
+div {
+	text-align: center;
+	vertical-align: middle;
+}
+
+
+#turnIndicator {
+	font-size: 20px;
+	margin-bottom: 15px;
+	margin-top: 10px;
+}
+
+#game {
+	font-size: 50px;
+	margin-bottom: 20px;
+}
+
+h1, h3 {
+	margin: 0;
+}
+
+h1 {
+	margin-top: 40px;
+	margin-bottom: 5px;
+	font-size: 80px;
+  	text-transform: uppercase;
+}
+
+h3 {
+	margin-bottom: 20px;
+}
+
+/* input {
+	margin: 10px;
+	font-size: 20px;
+} */
+
+input {
+	width: 5%;
+	margin: 0;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+  }
+
+/* button {
+	margin-top: 20px;
+	margin-bottom: 40px;
+	font-size: 20px;
+	padding: 10px 20px;
+} */
+button {
+	display: inline-block;
+	padding: 10px;
+	margin-left: 10px;
+	font-size: 12px;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	outline: none;
+	color: #fff;
+	background-color: #4c98af;
+	border: none;
+	border-radius: 15px;
+	box-shadow: 0 5px #999;
+  }
+  
+button:hover {background-color: #4c8892}
+  
+button:active {
+	background-color: #4c8892;
+	box-shadow: 0 3px #666;
+	transform: translateY(4px);
+}
+
+#replay {
+	font-size: 20px;
+	display: none
+}
+
