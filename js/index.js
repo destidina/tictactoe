@@ -138,8 +138,6 @@ var determineWinner = function() {
 			for (var squareNum = i; squareNum < (i + boardSize); squareNum += 1) { 
 				rowCheck.push(squares[squareNum].innerHTML);
 			};
-			console.log('Row ' + i + ' is ' + rowCheck);
-			console.log(allSame(rowCheck));
 
 			if (allSame(rowCheck)) {
 				winningPlayer = rowCheck; 
@@ -153,8 +151,6 @@ var determineWinner = function() {
 			for (var squareNum = i; squareNum < numSquares; squareNum += boardSize) {	
 				colCheck.push(squares[squareNum].innerHTML);
 			};
-			console.log('Column ' + i + 'is ' + colCheck);
-			console.log(allSame(colCheck));
 			
 			if (allSame(colCheck)) {
 				winningPlayer = colCheck; 
@@ -169,8 +165,7 @@ var determineWinner = function() {
 			diag1Check.push(squares[i].innerHTML);
 		};
 	};
-	console.log(diag1Check) 
-	console.log(allSame(diag1Check));
+	
 	if (allSame(diag1Check)) { 
 		winningPlayer = diag1Check; 
 		return true;
@@ -182,8 +177,7 @@ var determineWinner = function() {
 			diag2Check.push(squares[i].innerHTML);
 		};
 	};
-	console.log(diag2Check) 
-	console.log(allSame(diag2Check));
+	
 	if (allSame(diag2Check)) { 
 		winningPlayer = diag2Check; 
 		return true;
