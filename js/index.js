@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
 
 var optionsButton = document.getElementById("options_submit");
-const header = document.querySelector("#headerText")
+var header = document.querySelector("#headerText")
+var turnIndicator = document.getElementById("turnIndicator")
+var clicked = document.getElementById("boardsize_input");
 
-optionsButton.addEventListener("click", function(){
-
-optionsButton.innerHTML = "Restart";
-header.innerText = "Play!"
-header.style.color = "black";
+// change button text when game starts
+clicked.addEventListener("input", function(){
+	optionsButton.innerHTML = "Play";
+})
 
 function isEven(value){
     if (value % 2 == 0) {
@@ -37,176 +38,172 @@ function allSame(array) {
     };
 };
 
-var customBackground = '#4c98af'
+optionsButton.addEventListener("click", function(){
 
-var boardSize = parseInt(document.getElementById("boardsize_input").value);
-var clicked = document.getElementById("boardsize_input");
-clicked.addEventListener("input", function(){
-	optionsButton.innerHTML = "Play";
-})
+	optionsButton.innerHTML = "Restart";
+	header.innerText = "Play!"
+	header.style.color = "black";
+	turnIndicator.style.color = "black";
+	turnIndicator.innerHTML = "Tap anywhere to start. It's X's turn!";
 
-var gameBoard = [];
+	// Create Customizable Board
+	var boardSize = parseInt(document.getElementById("boardsize_input").value);
+	var numSquares = (boardSize * boardSize);
 
-var numSquares = (boardSize * boardSize);
+	document.getElementById("game").innerHTML = '<div id="board"></div>';
 
-for (var i = 0; i < numSquares; i++) {
-	gameBoard.push(i);
-};
+	var board = document.getElementById("board");
+	board.style.margin = '0 auto';
+	board.style.height = (100 * boardSize) + 'px';
+	board.style.width = (100 * boardSize) + 'px';
+	board.style.border = 'solid 1px black';
 
-document.getElementById("game").innerHTML = '<div id="board"></div>';
-
-
-var board = document.getElementById("board");
-
-board.style.margin = '0 auto';
-
-board.style.height = (100 * boardSize) + 'px';
-board.style.width = (100 * boardSize) + 'px';
-
-board.style.border = 'solid 1px black';
-
-for (var i = 0; i < numSquares; i++) {
-	board.innerHTML += '<div class="square"></div>'; 
-};
-
-var squares = document.getElementsByClassName("square");
-
-for (var i = 0; i < numSquares; i++) {
-	squares[i].style.height = '100px';
-	squares[i].style.width = '100px';
-	squares[i].style.float = "left";
-	squares[i].style.lineHeight = "100px";
-	squares[i].setAttribute("id", i.toString());
-};
-
-if (numSquares % 2 !== 0) { 
-	for (var i = 0; i < numSquares; i += 2) {
-		squares[i].style.backgroundColor = customBackground;
+	// Create Square Tiles
+	for (var i = 0; i < numSquares; i++) {
+		board.innerHTML += '<div class="square"></div>'; 
 	};
-} else { 
-	for (i = 0; i < numSquares; i += 1) {
-		if (isEven(i/boardSize)) { 
-			for (var squareNum = i; squareNum < (i + boardSize); squareNum += 2) {
-				squares[squareNum].style.backgroundColor = customBackground;	
+
+	var squares = document.getElementsByClassName("square");
+	for (var i = 0; i < numSquares; i++) {
+		squares[i].style.height = '100px';
+		squares[i].style.width = '100px';
+		squares[i].style.float = "left";
+		squares[i].style.lineHeight = "100px";
+		squares[i].setAttribute("id", i.toString());
+	};
+
+	// Set Board Square Color
+	if (numSquares % 2 !== 0) { 
+		for (var i = 0; i < numSquares; i += 2) {
+			squares[i].style.backgroundColor = "#4c98af";
+		};
+		for (var i = 1; i < numSquares; i += 2) {
+		squares[i].style.backgroundColor = "#b0c4de";
+		};
+	} else { 
+		for (i = 0; i < numSquares; i += 1) {
+			if (isEven(i/boardSize)) { 
+				for (var squareNum = i; squareNum < (i + boardSize); squareNum += 2) {
+					squares[squareNum].style.backgroundColor = "#4c98af";	
+				};
+				for (var squareNum = i+1; squareNum < (i + boardSize); squareNum += 2) {
+					squares[squareNum].style.backgroundColor = "#b0c4de";	
+				};
+			} else if (isOdd(i/boardSize)) { 
+				for (var squareNum = i; squareNum < (i + boardSize); squareNum += 2) {
+					squares[squareNum].style.backgroundColor = "#b0c4de";	
+				};
+				for (var squareNum = i+1; squareNum < (i + boardSize); squareNum += 2) {
+					squares[squareNum].style.backgroundColor = "#4c98af";	
+				};
+			} else {
 			};
-		} else if (isOdd(i/boardSize)) { 
-			for (var squareNum = i+1; squareNum < (i + boardSize); squareNum += 2) {
-				squares[squareNum].style.backgroundColor = customBackground;	
+		};
+	};
+
+	// Game Play Logic
+	var boardClicks = 0;
+	board.addEventListener("click", function() {
+	if (determineWinner()) { 
+		turnIndicator.style.color = "black";
+		header.style.color = "#4c98af";
+		header.style.color = "#4c98af";
+		turnIndicator.innerHTML = "Congrats!";
+		header.innerText = `${winningPlayer[0]} HAS WON!`;
+		
+	} else if (isEven(boardClicks)) {
+		turnIndicator.style.color = "black";
+		turnIndicator.innerHTML = "It's O's turn!";
+	} else {
+		turnIndicator.style.color = "white";
+		turnIndicator.innerHTML = "It's X's turn!";
+	};
+	boardClicks++;
+	}); 
+
+	var squareClicks = [];
+
+	for (var i = 0; i < numSquares; i++) {
+		squareClicks[i] = 0;
+	};
+
+	var winningPlayer;
+	var determineWinner = function() {
+		for (i = 0; i < numSquares; i += 1) { 
+			if ((i % boardSize) == 0) {
+				var rowCheck = [];
+				for (var squareNum = i; squareNum < (i + boardSize); squareNum += 1) { 
+					rowCheck.push(squares[squareNum].innerHTML);
+				};
+
+				if (allSame(rowCheck)) {
+					winningPlayer = rowCheck; 
+					return true;
+				};
 			};
+		};
+		for (i = 0; i < numSquares; i += 1) { 
+			if (i < boardSize) { 
+				var colCheck = [];
+				for (var squareNum = i; squareNum < numSquares; squareNum += boardSize) {	
+					colCheck.push(squares[squareNum].innerHTML);
+				};
+				
+				if (allSame(colCheck)) {
+					winningPlayer = colCheck; 
+					return true;
+				};	
+			};
+		};
+		var diag1Check = []; 
+		for (i = 0; i < numSquares; i += 1) {
+			if ((i % (boardSize + 1)) == 0) { 
+				console.log(i)
+				diag1Check.push(squares[i].innerHTML);
+			};
+		};
+		
+		if (allSame(diag1Check)) { 
+			winningPlayer = diag1Check; 
+			return true;
+		};
+		var diag2Check = []; 
+		for (i = (boardSize - 1); i < (numSquares - 1); i += 1) { 
+			if ((i % (boardSize - 1)) == 0) {
+				console.log(i)
+				diag2Check.push(squares[i].innerHTML);
+			};
+		};
+		
+		if (allSame(diag2Check)) { 
+			winningPlayer = diag2Check; 
+			return true;
+		};
+	}; 
+
+	var countClicks = function() {
+		var divID = this.getAttribute("id");
+		squareClicks[divID] += 1;
+		if (isEven(boardClicks) && squareClicks[divID] == 1) {
+			this.innerHTML = 'X';
+		} else if (isOdd(boardClicks) && squareClicks[divID] == 1) {
+			this.innerHTML = 'O';
+			this.style.color = "white";
+		} else if (!determineWinner()){
+			alert('Oops. That space is taken. Try another!');
+			boardClicks -= 1;
 		} else {
 		};
-	};
-};
-
-var turnIndicator = document.getElementById("turnIndicator")
-
-turnIndicator.style.color = "black";
-turnIndicator.innerHTML = "Tap anywhere to start. It's X's turn!";
-
-var boardClicks = 0;
-
-board.addEventListener("click", function() {
-if (determineWinner()) { 
-	turnIndicator.style.color = "black";
-	header.style.color = "#4c98af";
-	header.style.color = "#4c98af";
-	turnIndicator.innerHTML = "Congrats!";
-	header.innerText = `${winningPlayer[0]} HAS WON!`;
-	
-} else if (isEven(boardClicks)) {
-	turnIndicator.style.color = "black";
-	turnIndicator.innerHTML = "It's O's turn!";
-} else {
-	turnIndicator.style.color = "white";
-	turnIndicator.innerHTML = "It's X's turn!";
-};
-boardClicks++;
-}); 
-
-var squareClicks = [];
-
-for (var i = 0; i < numSquares; i++) {
-	squareClicks[i] = 0;
-};
-
-var winningPlayer;
-
-var determineWinner = function() {
-	for (i = 0; i < numSquares; i += 1) { 
-		if ((i % boardSize) == 0) {
-			var rowCheck = [];
-			for (var squareNum = i; squareNum < (i + boardSize); squareNum += 1) { 
-				rowCheck.push(squares[squareNum].innerHTML);
+		if (determineWinner()) { 
+			for (var i = 0; i < numSquares; i++) {
+				squareClicks[i] = 2;
 			};
+			document.getElementById("options_submit").innerHTML = "Play again?"
+		};
+	};
 
-			if (allSame(rowCheck)) {
-				winningPlayer = rowCheck; 
-				return true;
-			};
-		};
+	for (var i = 0; i < numSquares; i++) {
+		squares[i].addEventListener("click", countClicks);
 	};
-	for (i = 0; i < numSquares; i += 1) { 
-		if (i < boardSize) { 
-			var colCheck = [];
-			for (var squareNum = i; squareNum < numSquares; squareNum += boardSize) {	
-				colCheck.push(squares[squareNum].innerHTML);
-			};
-			
-			if (allSame(colCheck)) {
-				winningPlayer = colCheck; 
-				return true;
-			};	
-		};
-	};
-	var diag1Check = []; 
-	for (i = 0; i < numSquares; i += 1) {
-		if ((i % (boardSize + 1)) == 0) { 
-			console.log(i)
-			diag1Check.push(squares[i].innerHTML);
-		};
-	};
-	
-	if (allSame(diag1Check)) { 
-		winningPlayer = diag1Check; 
-		return true;
-	};
-	var diag2Check = []; 
-	for (i = (boardSize - 1); i < (numSquares - 1); i += 1) { 
-		if ((i % (boardSize - 1)) == 0) {
-			console.log(i)
-			diag2Check.push(squares[i].innerHTML);
-		};
-	};
-	
-	if (allSame(diag2Check)) { 
-		winningPlayer = diag2Check; 
-		return true;
-	};
-}; 
-
-var countClicks = function() {
-	var divID = this.getAttribute("id");
-	squareClicks[divID] += 1;
-	if (isEven(boardClicks) && squareClicks[divID] == 1) {
-		this.innerHTML = 'X';
-	} else if (isOdd(boardClicks) && squareClicks[divID] == 1) {
-		this.innerHTML = 'O';
-		this.style.color = "white";
-	} else if (!determineWinner()){
-		alert('Oops. That space is taken. Try another!');
-		boardClicks -= 1;
-	} else {
-	};
-	if (determineWinner()) { 
-		for (var i = 0; i < numSquares; i++) {
-			squareClicks[i] = 2;
-		};
-		document.getElementById("options_submit").innerHTML = "Play again?"
-	};
-};
-
-for (var i = 0; i < numSquares; i++) {
-	squares[i].addEventListener("click", countClicks);
-};
 }); 
 });
